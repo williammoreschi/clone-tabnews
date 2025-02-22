@@ -7,17 +7,9 @@ async function query(queryObjects){
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
     port: process.env.POSTGRES_PORT,
-    ssl: process.env.NODE_ENV === 'development' ? false : true,
+    ssl: getSSLValues(),
   });
 
-  console.log("Credenciais do Postgres:",{
-    host: process.env.POSTGRES_HOST,
-    user: process.env.POSTGRES_USER,
-    database: process.env.POSTGRES_DB,
-    password: process.env.POSTGRES_PASSWORD,
-    port: process.env.POSTGRES_PORT,
-  });
-  
   try {
     await client.connect();
     const result = await client.query(queryObjects);
@@ -34,3 +26,14 @@ async function query(queryObjects){
 export default {
   query: query,
 };
+
+
+function getSSLValues(){
+  if(process.env.POSTGRES_CA){
+    return {
+      ca: process.env.POSTGRES_CA,
+    }
+  }
+
+  return process.env.NODE_ENV === 'development' ? false : true;
+}
