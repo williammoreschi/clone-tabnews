@@ -1,17 +1,19 @@
-import retry from 'async-retry';
+import retry from "async-retry";
 
-async function waitForAllServices(){
+async function waitForAllServices() {
   await webForWebServicer();
 
   async function webForWebServicer() {
-    return retry(fetchStatusPage,{
+    return retry(fetchStatusPage, {
       retries: 100,
       maxTimeout: 1000,
       onRetry: (error, attempt) => {
-        console.log(`Attempt ${attempt} - Failed to fetch status page: ${error.message}`);
+        console.log(
+          `Attempt ${attempt} - Failed to fetch status page: ${error.message}`
+        );
       },
-    })
-    
+    });
+
     async function fetchStatusPage() {
       try {
         const response = await fetch("http://localhost:3000/api/v1/status");
@@ -21,10 +23,10 @@ async function waitForAllServices(){
       } catch (error) {
         throw error;
       }
-     }
+    }
   }
 }
 
 export default {
-  waitForAllServices
-}
+  waitForAllServices,
+};
