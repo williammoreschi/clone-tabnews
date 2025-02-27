@@ -4,8 +4,8 @@ import database from "infra/database";
 
 export default async function migrations(req, res) {
   const allowedMethods = ["GET", "POST"];
-  
-  if(!allowedMethods.includes(req.method)){
+
+  if (!allowedMethods.includes(req.method)) {
     return res.status(405).json({
       error: `Method ${req.method} not allowed`,
     });
@@ -18,34 +18,33 @@ export default async function migrations(req, res) {
 
     const defaultMigrationOption = {
       dbClient,
-      dir: join("infra","migrations"),
+      dir: join("infra", "migrations"),
       direction: "up",
       verbose: true,
       migrationsTable: "pgmigrations",
-      dryRun: true
-    }
-  
-    if(req.method === "GET"){
+      dryRun: true,
+    };
+
+    if (req.method === "GET") {
       const pendingMigrations = await migrationRunner(defaultMigrationOption);
       return res.status(200).json(pendingMigrations);
     }
-  
-    if(req.method === "POST"){
+
+    if (req.method === "POST") {
       const migratedMigrations = await migrationRunner({
         ...defaultMigrationOption,
-        dryRun:false
+        dryRun: false,
       });
-      if(migratedMigrations.length > 0){
+      if (migratedMigrations.length > 0) {
         return res.status(201).json(migratedMigrations);
       }
-  
+
       return res.status(200).json(migratedMigrations);
     }
   } catch (error) {
     console.error(error);
     throw error;
-  }finally{
+  } finally {
     await dbClient.end();
-  }  
-  
+  }
 }

@@ -1,7 +1,6 @@
 {
-  "cSpell.words": [
-    "datname",
-    "isready",
-    "pgmigrations"
-  ]
+  "cSpell.words": ["datname", "isready", "pgmigrations"],
+  "[javascript]": {
+    "editor.formatOnSave": false
+  }
 }
