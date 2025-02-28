@@ -1,5 +1,4 @@
 import database from "infra/database.js";
-import { parse } from "path";
 
 async function status(req, res) {
   const updatedAt = new Date().toISOString();
