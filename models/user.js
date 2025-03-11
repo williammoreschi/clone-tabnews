@@ -2,38 +2,69 @@ import database from "infra/database";
 import { ValidationError } from "infra/errors.js";
 
 async function create(userInputValue) {
-  await validateUniqueEmail(userInputValue.email);
-  await validateUniqueUsername(userInputValue.username);
+  validatePresenceOfFields(userInputValue);
+  validateEmailFormat(userInputValue.email);
+  await validateUniqueFields(userInputValue);
 
   const newUser = await runInsertQuery(userInputValue);
   return newUser;
 
-  async function validateUniqueEmail(email) {
-    const results = await database.query({
-      text: `SELECT email FROM users WHERE LOWER(email) = LOWER($1)`,
-      values: [email],
-    });
-
-    if (results.rowCount > 0) {
+  function validatePresenceOfFields({ email, username }) {
+    if (!email || !email.trim()) {
       throw new ValidationError({
-        message: "O email informado já está sendo utilizado.",
-        action: "Utilize outro email para realizar o cadastro.",
+        message: "O campo email é obrigatório.",
+        action: "Informe um email válido.",
+      });
+    }
+
+    if (!username || !username.trim()) {
+      throw new ValidationError({
+        message: "O campo username é obrigatório.",
+        action: "Informe um username válido.",
       });
     }
   }
 
-  async function validateUniqueUsername(username) {
+  function validateEmailFormat(email) {
+    if (!isValidEmail(email)) {
+      throw new ValidationError({
+        message: "O email informado não é válido.",
+        action: "Informe um email válido.",
+      });
+    }
+  }
+
+  async function validateUniqueFields({ email, username }) {
     const results = await database.query({
-      text: `SELECT username FROM users WHERE LOWER(username) = LOWER($1)`,
-      values: [username],
+      text: `
+        SELECT email, username FROM users 
+        WHERE LOWER(email) = LOWER($1) OR LOWER(username) = LOWER($2)
+      `,
+      values: [email.trim(), username.trim()],
     });
 
     if (results.rowCount > 0) {
-      throw new ValidationError({
-        message: "O username informado já está sendo utilizado.",
-        action: "Utilize outro username para realizar o cadastro.",
-      });
+      const existingUser = results.rows[0];
+      if (existingUser.email.toLowerCase() === email.trim().toLowerCase()) {
+        throw new ValidationError({
+          message: "O email informado já está sendo utilizado.",
+          action: "Utilize outro email para realizar o cadastro.",
+        });
+      }
+      if (
+        existingUser.username.toLowerCase() === username.trim().toLowerCase()
+      ) {
+        throw new ValidationError({
+          message: "O username informado já está sendo utilizado.",
+          action: "Utilize outro username para realizar o cadastro.",
+        });
+      }
     }
+  }
+
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 
   async function runInsertQuery(userInputValue) {
