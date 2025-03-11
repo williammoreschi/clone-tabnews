@@ -117,5 +117,228 @@ describe("POST /api/v1/users", () => {
         status_code: 400,
       });
     });
+
+    test("With missing 'username' field", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "williammoreschi3@gmail.com",
+          password: "123abc",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "O campo username é obrigatório.",
+        action: "Informe um username válido.",
+        status_code: 400,
+      });
+    });
+
+    test("With empty 'username' field", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "",
+          email: "williammoreschi3@gmail.com",
+          password: "123abc",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "O campo username é obrigatório.",
+        action: "Informe um username válido.",
+        status_code: 400,
+      });
+    });
+
+    test("With 'username' containing only spaces", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: " ",
+          email: "williammoreschi3@gmail.com",
+          password: "123abc",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "O campo username é obrigatório.",
+        action: "Informe um username válido.",
+        status_code: 400,
+      });
+    });
+
+    test("With 'username' null", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: null,
+          email: "williammoreschi3@gmail.com",
+          password: "123abc",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "O campo username é obrigatório.",
+        action: "Informe um username válido.",
+        status_code: 400,
+      });
+    });
+
+    test("With missing 'email' field", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "williammoreschi3",
+          password: "123abc",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "O campo email é obrigatório.",
+        action: "Informe um email válido.",
+        status_code: 400,
+      });
+    });
+
+    test("With empty 'email' field", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "williammoreschi3",
+          email: "",
+          password: "123abc",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "O campo email é obrigatório.",
+        action: "Informe um email válido.",
+        status_code: 400,
+      });
+    });
+
+    test("With 'email' containing only spaces", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "williammoreschi3",
+          email: "  ",
+          password: "123abc",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "O campo email é obrigatório.",
+        action: "Informe um email válido.",
+        status_code: 400,
+      });
+    });
+
+    test("With 'email' null", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "williammoreschi3",
+          email: null,
+          password: "123abc",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "O campo email é obrigatório.",
+        action: "Informe um email válido.",
+        status_code: 400,
+      });
+    });
+
+    test("With 'email' in an invalid format", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "williammoreschi66",
+          email: "williammoreschi@.com",
+          password: "123abc",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "O email informado não é válido.",
+        action: "Informe um email válido.",
+        status_code: 400,
+      });
+    });
   });
 });
