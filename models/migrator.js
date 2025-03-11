@@ -5,7 +5,7 @@ import migrationRunner from "node-pg-migrate";
 const defaultMigrationOption = {
   dir: resolve("infra", "migrations"),
   direction: "up",
-  verbose: true,
+  log: () => {},
   migrationsTable: "pgmigrations",
   dryRun: true,
 };
