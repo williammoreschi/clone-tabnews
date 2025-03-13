@@ -4,6 +4,7 @@
   "description": "Implementação do https://www.tabnews.com.br para o https://curso.dev",
   "main": "index.js",
   "scripts": {
+    "build": "next build",
     "predev": "echo 'Iniciando Next.js...'",
     "dev": "node scripts/dev-wrapper.js",
     "test": "npm run services:up && concurrently --names next,jest --hide next --kill-others --success command-jest \"next dev\" \"jest --runInBand --verbose\"",
