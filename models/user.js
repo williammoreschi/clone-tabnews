@@ -1,10 +1,12 @@
 import database from "infra/database";
+import password from "models/password.js";
 import { ValidationError, NotFoundError } from "infra/errors.js";
 
 async function create(userInputValue) {
   validatePresenceOfFields(userInputValue);
   validateEmailFormat(userInputValue.email);
   await validateUniqueFields(userInputValue);
+  await hashPasswordInObject(userInputValue);
 
   const newUser = await runInsertQuery(userInputValue);
   return newUser;
@@ -65,6 +67,11 @@ async function create(userInputValue) {
   function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  }
+
+  async function hashPasswordInObject(userInputValue) {
+    const hashedPassword = await password.hash(userInputValue.password);
+    userInputValue.password = hashedPassword;
   }
 
   async function runInsertQuery(userInputValue) {
