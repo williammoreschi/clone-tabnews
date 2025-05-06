@@ -5,7 +5,8 @@ import { ValidationError, NotFoundError } from "infra/errors.js";
 async function create(userInputValue) {
   validatePresenceOfFields(userInputValue);
   validateEmailFormat(userInputValue.email);
-  await validateUniqueFields(userInputValue);
+  await validateUniqueUsername(userInputValue.username);
+  await validateUniqueEmail(userInputValue.email);
   await hashPasswordInObject(userInputValue);
 
   const newUser = await runInsertQuery(userInputValue);
@@ -36,42 +37,9 @@ async function create(userInputValue) {
     }
   }
 
-  async function validateUniqueFields({ email, username }) {
-    const results = await database.query({
-      text: `
-        SELECT email, username FROM users 
-        WHERE LOWER(email) = LOWER($1) OR LOWER(username) = LOWER($2)
-      `,
-      values: [email.trim(), username.trim()],
-    });
-
-    if (results.rowCount > 0) {
-      const existingUser = results.rows[0];
-      if (existingUser.email.toLowerCase() === email.trim().toLowerCase()) {
-        throw new ValidationError({
-          message: "O email informado já está sendo utilizado.",
-          action: "Utilize outro email para realizar o cadastro.",
-        });
-      }
-      if (
-        existingUser.username.toLowerCase() === username.trim().toLowerCase()
-      ) {
-        throw new ValidationError({
-          message: "O username informado já está sendo utilizado.",
-          action: "Utilize outro username para realizar o cadastro.",
-        });
-      }
-    }
-  }
-
   function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  }
-
-  async function hashPasswordInObject(userInputValue) {
-    const hashedPassword = await password.hash(userInputValue.password);
-    userInputValue.password = hashedPassword;
   }
 
   async function runInsertQuery(userInputValue) {
@@ -121,9 +89,109 @@ async function findOneByUsername(username) {
   }
 }
 
+async function update(username, userInputValue) {
+  const currentUser = await findOneByUsername(username);
+
+  if ("username" in userInputValue) {
+    if (
+      currentUser.username.toLowerCase() !==
+      userInputValue.username.toLowerCase()
+    ) {
+      await validateUniqueUsername(userInputValue.username);
+    }
+  }
+
+  if ("email" in userInputValue) {
+    console.log(
+      currentUser.email.toLowerCase(),
+      " == ",
+      userInputValue.email.toLowerCase(),
+    );
+    if (
+      currentUser.email.toLowerCase() !== userInputValue.email.toLowerCase()
+    ) {
+      await validateUniqueEmail(userInputValue.email);
+    }
+  }
+
+  if ("password" in userInputValue) {
+    await hashPasswordInObject(userInputValue);
+  }
+
+  const userWithNewValues = { ...currentUser, ...userInputValue };
+
+  const updateUser = await runUpdateQuery(userWithNewValues);
+  return updateUser;
+
+  async function runUpdateQuery(userWithNewValues) {
+    const results = await database.query({
+      text: `
+        UPDATE users
+        SET username = $2, email = $3, password = $4, updated_at = timezone('UTC', now())
+        WHERE id = $1
+        RETURNING *
+      `,
+      values: [
+        userWithNewValues.id,
+        userWithNewValues.username,
+        userWithNewValues.email,
+        userWithNewValues.password,
+      ],
+    });
+
+    return results.rows[0];
+  }
+}
+
+async function validateUniqueUsername(username) {
+  const results = await database.query({
+    text: `
+      SELECT email, username FROM users 
+      WHERE LOWER(username) = LOWER($1)
+    `,
+    values: [username.trim()],
+  });
+
+  if (results.rowCount > 0) {
+    const existingUser = results.rows[0];
+    if (existingUser.username.toLowerCase() === username.trim().toLowerCase()) {
+      throw new ValidationError({
+        message: "O username informado já está sendo utilizado.",
+        action: "Utilize outro username para realizar esta operação.",
+      });
+    }
+  }
+}
+
+async function validateUniqueEmail(email) {
+  const results = await database.query({
+    text: `
+      SELECT email, username FROM users 
+      WHERE LOWER(email) = LOWER($1)
+    `,
+    values: [email.trim()],
+  });
+
+  if (results.rowCount > 0) {
+    const existingUser = results.rows[0];
+    if (existingUser.email.toLowerCase() === email.trim().toLowerCase()) {
+      throw new ValidationError({
+        message: "O email informado já está sendo utilizado.",
+        action: "Utilize outro email para realizar esta operação.",
+      });
+    }
+  }
+}
+
+async function hashPasswordInObject(userInputValue) {
+  const hashedPassword = await password.hash(userInputValue.password);
+  userInputValue.password = hashedPassword;
+}
+
 const user = {
   create,
   findOneByUsername,
+  update,
 };
 
 export default user;
