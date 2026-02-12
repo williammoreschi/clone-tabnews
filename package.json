@@ -30,7 +30,7 @@
     "bcryptjs": "^3.0.2",
     "dotenv": "16.4.7",
     "dotenv-expand": "12.0.1",
-    "next": "15.2.0",
+    "next": "15.2.8",
     "next-connect": "1.0.0",
     "node-pg-migrate": "7.9.1",
     "pg": "8.13.3",
