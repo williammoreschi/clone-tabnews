@@ -3,6 +3,7 @@ import {
   InternalServerError,
   ValidationError,
   NotFoundError,
+  UnauthorizedError,
 } from "infra/errors";
 
 function onNoMatchHandler(req, res) {
@@ -12,7 +13,12 @@ function onNoMatchHandler(req, res) {
 }
 
 function onErrorHandler(error, req, res) {
-  const allowedErrors = [ValidationError, NotFoundError];
+  const allowedErrors = [
+    ValidationError,
+    NotFoundError,
+    UnauthorizedError,
+    UnauthorizedError,
+  ];
 
   if (allowedErrors.some((errType) => error instanceof errType)) {
     return res.status(error.statusCode).json(error);
