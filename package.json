@@ -18,7 +18,8 @@
     "migrations:up": "node-pg-migrate -m infra/migrations --envPath .env.development up",
     "lint:prettier:check": "prettier --check .",
     "lint:prettier:fix": "prettier --write .",
-    "lint:eslint:check": "next lint",
+    "lint:eslint:check": "eslint . --max-warnings=0",
+    "lint:eslint:fix": "eslint . --fix",
     "prepare": "husky",
     "commit": "cz"
   },
