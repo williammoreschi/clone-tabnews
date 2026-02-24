@@ -99,7 +99,7 @@ describe("GET /api/v1/user", () => {
       );
     });
 
-    test.skip("With nonexistent session", async () => {
+    test("With nonexistent session", async () => {
       const response = await fetch("http://localhost:3000/api/v1/user", {
         headers: {
           Cookie: `session_id=533d4a60aaee414eb93cc050e537dff6108017f138d0f65f61a86d84ab9f13f5a4e07270e689c8ad4c316915935eadcb`,
@@ -117,7 +117,7 @@ describe("GET /api/v1/user", () => {
       });
     });
 
-    test.skip("With expired session", async () => {
+    test("With expired session", async () => {
       jest.useFakeTimers({
         now: new Date(Date.now() - session.EXPIRATION_IN_MILLISECONDS),
       });
