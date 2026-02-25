@@ -1,7 +1,9 @@
 {
   "functions": {
-    "pages/api/**/*.js": {
-      "includeFiles": "infra/migrations/**"
+    "pages/api/v1/migrations/index.js": {
+      "includeFiles": [
+        "infra/migrations/**"
+      ]
     }
   }
 }
