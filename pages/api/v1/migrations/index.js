@@ -6,11 +6,6 @@ const router = createRouter();
 router.get(getHandler);
 router.post(postHandler);
 
-console.log("---$$$$---");
-console.log("cwd:", process.cwd());
-console.log("root files:", require("fs").readdirSync(process.cwd()));
-console.log("--- END $$$$---");
-
 export default router.handler(controller.errorHandler);
 
 async function getHandler(req, res) {
