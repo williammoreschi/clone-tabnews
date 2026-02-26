@@ -15,14 +15,14 @@ function onNoMatchHandler(req, res) {
 }
 
 function onErrorHandler(error, req, res) {
-  const allowedErrors = [
-    ValidationError,
-    NotFoundError,
-    UnauthorizedError,
-    UnauthorizedError,
-  ];
+  const allowedErrors = [ValidationError, NotFoundError];
 
   if (allowedErrors.some((errType) => error instanceof errType)) {
+    return res.status(error.statusCode).json(error);
+  }
+
+  if (error instanceof UnauthorizedError) {
+    clearSessionCookie(res);
     return res.status(error.statusCode).json(error);
   }
 
