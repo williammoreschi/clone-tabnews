@@ -28,7 +28,6 @@ async function create(userId) {
 
 async function findOneValidByToken(sessionToken) {
   const result = await runSelectQuery(sessionToken);
-
   return result;
 
   async function runSelectQuery(sessionToken) {
@@ -72,10 +71,30 @@ async function renew(sessionId) {
   return renewSessionObject;
 }
 
+async function expireById(sessionId) {
+  const expiredSessionObject = await runUpdateQuery(sessionId);
+
+  async function runUpdateQuery(sessionId) {
+    const result = await database.query({
+      text: `
+        UPDATE sessions
+        SET expires_at = expires_at - INTERVAL '1 year', 
+        updated_at = NOW()
+        WHERE id = $1
+        Returning *
+      `,
+      values: [sessionId],
+    });
+    return result.rows[0];
+  }
+  return expiredSessionObject;
+}
+
 const session = {
   create,
   findOneValidByToken,
   renew,
+  expireById,
   EXPIRATION_IN_MILLISECONDS,
 };
 
