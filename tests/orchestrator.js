@@ -5,10 +5,13 @@ import migrator from "models/migrator";
 import user from "models/user";
 import session from "models/session";
 
-async function waitForAllServices() {
-  await webForWebServicer();
+const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
 
-  async function webForWebServicer() {
+async function waitForAllServices() {
+  await waitForWebServicer();
+  await waitForEmailService();
+
+  async function waitForWebServicer() {
     return retry(fetchStatusPage, {
       retries: 100,
       maxTimeout: 1000,
@@ -21,6 +24,25 @@ async function waitForAllServices() {
 
     async function fetchStatusPage() {
       const response = await fetch("http://localhost:3000/api/v1/status");
+      if (response.status !== 200) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+    }
+  }
+
+  async function waitForEmailService() {
+    return retry(fetchEmailPage, {
+      retries: 100,
+      maxTimeout: 1000,
+      onRetry: (error, attempt) => {
+        console.log(
+          `Attempt ${attempt} - Failed to fetch status page: ${error.message}`,
+        );
+      },
+    });
+
+    async function fetchEmailPage() {
+      const response = await fetch(emailHttpUrl);
       if (response.status !== 200) {
         throw new Error(`HTTP error ${response.status}`);
       }
@@ -49,12 +71,34 @@ async function runPendingMigrations() {
   await migrator.runPendingMigration();
 }
 
+async function deleteAllEmail() {
+  await fetch(`${emailHttpUrl}/messages`, {
+    method: "DELETE",
+  });
+}
+
+async function getLastEmail() {
+  const emailListResponse = await fetch(`${emailHttpUrl}/messages`);
+  const emailListBody = await emailListResponse.json();
+  const lastEmailItem = emailListBody.pop();
+  const emailContentResponse = await fetch(
+    `${emailHttpUrl}/messages/${lastEmailItem.id}.plain`,
+  );
+  const emailContentBody = await emailContentResponse.text();
+
+  lastEmailItem.text = emailContentBody;
+
+  return lastEmailItem;
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
   runPendingMigrations,
   createUser,
   createSession,
+  deleteAllEmail,
+  getLastEmail,
 };
 
 export default orchestrator;
