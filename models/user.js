@@ -241,6 +241,26 @@ async function validateUniqueEmail(email) {
   }
 }
 
+async function setFeatures(userId, features) {
+  const updatedUser = await runUpdateQuery(userId, features);
+  return updatedUser;
+
+  async function runUpdateQuery(userId, features) {
+    const results = await database.query({
+      text: `
+        UPDATE users
+        SET features = $2, 
+        updated_at = timezone('utc', now())
+        WHERE id = $1
+        RETURNING *
+      `,
+      values: [userId, features],
+    });
+
+    return results.rows[0];
+  }
+}
+
 async function hashPasswordInObject(userInputValue) {
   const hashedPassword = await password.hash(userInputValue.password);
   userInputValue.password = hashedPassword;
@@ -251,6 +271,7 @@ const user = {
   findOneById,
   findOneByUsername,
   findOneByEmail,
+  setFeatures,
   update,
 };
 
