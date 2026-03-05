@@ -1,23 +1,12 @@
 const { spawn } = require("child_process");
 
-const command = "npm";
-const args = [
-  "run",
-  "services:up",
-  "&&",
-  "npm",
-  "run",
-  "services:wait:database",
-  "&&",
-  "npm",
-  "run",
-  "migrations:up",
-  "&&",
-  "next",
-  "dev",
-];
+const command =
+  "npm run services:up && npm run services:wait:database && npm run migrations:up && next dev";
 
-const child = spawn(command, args, { stdio: "inherit", shell: true });
+const child = spawn(command, {
+  stdio: "inherit",
+  shell: true,
+});
 
 // Captura o Ctrl+C (SIGINT) e encerra corretamente
 process.on("SIGINT", () => {
