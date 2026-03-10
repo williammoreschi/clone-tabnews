@@ -9,6 +9,7 @@ import {
   UnauthorizedError,
   ForbiddenError,
 } from "infra/errors";
+import authorization from "models/authorization";
 
 function onNoMatchHandler(req, res) {
   const publicErrorObject = new MethodNotAllowedError();
@@ -92,7 +93,7 @@ function canRequest(feature) {
   return function canRequestMiddleware(req, res, next) {
     const userTryingRequest = req.context.user;
 
-    if (userTryingRequest.features.includes(feature)) {
+    if (authorization.can(userTryingRequest, feature)) {
       return next();
     }
 
