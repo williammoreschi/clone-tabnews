@@ -8,7 +8,7 @@ function can(user, feature, reource) {
   if (feature === "update:user" && reource) {
     authorized = false;
 
-    if (user.id === reource.id) {
+    if (user.id === reource.id || can(user, "update:user:others")) {
       authorized = true;
     }
   }
