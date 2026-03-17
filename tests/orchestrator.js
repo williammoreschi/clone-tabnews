@@ -58,9 +58,9 @@ async function clearDatabase() {
 async function createUser(userObject) {
   return await user.create({
     username:
-      userObject.username ?? faker.internet.username().replace(/[_.-]/g, ""),
-    email: userObject.email ?? faker.internet.email(),
-    password: userObject.password ?? "password123",
+      userObject?.username ?? faker.internet.username().replace(/[_.-]/g, ""),
+    email: userObject?.email ?? faker.internet.email(),
+    password: userObject?.password ?? "password123",
   });
 }
 
@@ -106,6 +106,11 @@ function extractUUID(text) {
   return match ? match[0] : null;
 }
 
+async function addFeatureToUser(userObject, features) {
+  const updatedUser = await user.addFeatures(userObject.id, features);
+  return updatedUser;
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
@@ -116,6 +121,7 @@ const orchestrator = {
   deleteAllEmail,
   getLastEmail,
   extractUUID,
+  addFeatureToUser,
 };
 
 export default orchestrator;
