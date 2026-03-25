@@ -1,6 +1,5 @@
 import authorization from "models/authorization";
 import { InternalServerError } from "infra/errors";
-import password from "models/password";
 
 describe("authorization", () => {
   describe("can", () => {
