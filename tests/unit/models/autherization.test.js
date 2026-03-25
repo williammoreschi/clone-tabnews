@@ -1,15 +1,15 @@
 import authorization from "models/authorization";
 import { InternalServerError } from "infra/errors";
 
-describe("authorization", () => {
-  describe("can", () => {
-    test("Whithout `user`", () => {
+describe("models/authorization.js", () => {
+  describe(".can()", () => {
+    test("without `user`", () => {
       expect(() => {
         authorization.can();
       }).toThrow(InternalServerError);
     });
 
-    test("Whithout `user.features`", () => {
+    test("without `user.features`", () => {
       const createdUser = {
         username: "UserWhithoutFeatures",
       };
@@ -18,7 +18,7 @@ describe("authorization", () => {
       }).toThrow(InternalServerError);
     });
 
-    test("Whit unknown `features`", () => {
+    test("with unknown `feature`", () => {
       const createdUser = {
         features: [],
       };
@@ -27,7 +27,7 @@ describe("authorization", () => {
       }).toThrow(InternalServerError);
     });
 
-    test("Whit valid `user` and known `features`", () => {
+    test("with valid `user` and known `feature`", () => {
       const createdUser = {
         features: ["read:user"],
       };
@@ -35,14 +35,14 @@ describe("authorization", () => {
     });
   });
 
-  describe("filterOutput", () => {
-    test("Whithout `user`", () => {
+  describe(".filterOutput()", () => {
+    test("without `user`", () => {
       expect(() => {
         authorization.filterOutput();
       }).toThrow(InternalServerError);
     });
 
-    test("Whithout `user.features`", () => {
+    test("without `user.features`", () => {
       const createdUser = {
         username: "UserWhithoutFeatures",
       };
@@ -51,7 +51,7 @@ describe("authorization", () => {
       }).toThrow(InternalServerError);
     });
 
-    test("Whit unknown `features`", () => {
+    test("with unknown `feature`", () => {
       const createdUser = {
         features: [],
       };
@@ -60,7 +60,7 @@ describe("authorization", () => {
       }).toThrow(InternalServerError);
     });
 
-    test("Whit valid `user`, known `features` and `resource`", () => {
+    test("with valid `user`, known `feature` and `resource`", () => {
       const createdUser = {
         features: ["read:user"],
       };
@@ -83,12 +83,12 @@ describe("authorization", () => {
         id: "user-id",
         username: "User",
         features: ["read:user"],
-        created_at: new Date(),
-        updated_at: new Date(),
+        created_at: expect.any(Date),
+        updated_at: expect.any(Date),
       });
     });
 
-    test("Whit valid `user`, known `features` but no `resource`", () => {
+    test("with valid `user`, known `feature` but no `resource`", () => {
       const createdUser = {
         features: ["read:user"],
       };
