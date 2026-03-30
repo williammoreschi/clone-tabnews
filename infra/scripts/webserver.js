@@ -1,17 +1,30 @@
 function getOrigin() {
-  if (["test", "development"].includes(process.env.NODE_ENV)) {
-    return "http://localhost:3000";
+  const { NODE_ENV, VERCEL_ENV, VERCEL_URL, APP_URL } = process.env;
+
+  // 1. Preview (Vercel)
+  if (VERCEL_ENV === "preview" && VERCEL_URL) {
+    return `https://${VERCEL_URL}`;
   }
 
-  if (process.env.VERCEL_ENV === "preview") {
-    return `https://${process.env.VERCEL_URL}`;
+  // 2. Ambiente local / teste
+  if (NODE_ENV === "development" || NODE_ENV === "test") {
+    return APP_URL || "http://localhost:3000";
   }
 
-  return "https://moreschi.dev.br";
+  // 3. Produção (obrigatório)
+  if (!APP_URL) {
+    throw new Error("APP_URL não definido em produção");
+  }
+
+  return APP_URL;
+}
+
+function normalizeUrl(url) {
+  return url.replace(/\/$/, "");
 }
 
 const webserver = {
-  origin: getOrigin(),
+  origin: normalizeUrl(getOrigin()),
 };
 
 export default webserver;
