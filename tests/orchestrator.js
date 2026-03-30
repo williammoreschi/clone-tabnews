@@ -5,6 +5,7 @@ import migrator from "models/migrator";
 import user from "models/user";
 import session from "models/session";
 import activation from "models/activation";
+import webserver from "infra/scripts/webserver";
 
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
 
@@ -24,7 +25,7 @@ async function waitForAllServices() {
     });
 
     async function fetchStatusPage() {
-      const response = await fetch("http://localhost:3000/api/v1/status");
+      const response = await fetch(`${webserver.origin}/api/v1/status`);
       if (response.status !== 200) {
         throw new Error(`HTTP error ${response.status}`);
       }
