@@ -28,7 +28,7 @@ describe("GET /api/v1/migrations", () => {
   describe("Default `user`", () => {
     test("`Retrieving pending migrations`", async () => {
       const createUser = await orchestrator.createUser();
-      const activatedUser = await orchestrator.activateUser(createUser.id);
+      const activatedUser = await orchestrator.activateUser(createUser);
       const sessionObject = await orchestrator.createSession(activatedUser);
 
       const response = await fetch(`${webserver.origin}/api/v1/migrations`, {
@@ -53,7 +53,7 @@ describe("GET /api/v1/migrations", () => {
   describe("Privileged `user`", () => {
     test("With `read:migration`", async () => {
       const createUser = await orchestrator.createUser();
-      const activatedUser = await orchestrator.activateUser(createUser.id);
+      const activatedUser = await orchestrator.activateUser(createUser);
       await orchestrator.addFeatureToUser(activatedUser, ["read:migration"]);
       const sessionObject = await orchestrator.createSession(activatedUser);
       const response = await fetch(`${webserver.origin}/api/v1/migrations`, {
