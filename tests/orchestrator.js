@@ -4,6 +4,7 @@ import database from "infra/database";
 import migrator from "models/migrator";
 import user from "models/user";
 import session from "models/session";
+import activation from "models/activation";
 
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
 
@@ -57,10 +58,14 @@ async function clearDatabase() {
 async function createUser(userObject) {
   return await user.create({
     username:
-      userObject.username ?? faker.internet.username().replace(/[_.-]/g, ""),
-    email: userObject.email ?? faker.internet.email(),
-    password: userObject.password ?? "password123",
+      userObject?.username ?? faker.internet.username().replace(/[_.-]/g, ""),
+    email: userObject?.email ?? faker.internet.email(),
+    password: userObject?.password ?? "password123",
   });
+}
+
+async function activateUser(userId) {
+  return await activation.activateUserByUserId(userId);
 }
 
 async function createSession(userId) {
@@ -81,6 +86,11 @@ async function getLastEmail() {
   const emailListResponse = await fetch(`${emailHttpUrl}/messages`);
   const emailListBody = await emailListResponse.json();
   const lastEmailItem = emailListBody.pop();
+
+  if (!lastEmailItem) {
+    return null;
+  }
+
   const emailContentResponse = await fetch(
     `${emailHttpUrl}/messages/${lastEmailItem.id}.plain`,
   );
@@ -91,14 +101,27 @@ async function getLastEmail() {
   return lastEmailItem;
 }
 
+function extractUUID(text) {
+  const match = text.match(/[0-9a-fA-F-]{36}/);
+  return match ? match[0] : null;
+}
+
+async function addFeatureToUser(userObject, features) {
+  const updatedUser = await user.addFeatures(userObject.id, features);
+  return updatedUser;
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
   runPendingMigrations,
   createUser,
+  activateUser,
   createSession,
   deleteAllEmail,
   getLastEmail,
+  extractUUID,
+  addFeatureToUser,
 };
 
 export default orchestrator;

@@ -8,6 +8,7 @@ async function create(userInputValue) {
   await validateUniqueUsername(userInputValue.username);
   await validateUniqueEmail(userInputValue.email);
   await hashPasswordInObject(userInputValue);
+  injectDefaultFeaturesInObject(userInputValue);
 
   const newUser = await runInsertQuery(userInputValue);
   return newUser;
@@ -46,9 +47,9 @@ async function create(userInputValue) {
     const results = await database.query({
       text: `
         INSERT INTO 
-          users (username,email,password) 
+          users (username,email,password, features) 
         VALUES 
-          ($1,$2,$3)
+          ($1,$2,$3,$4)
         RETURNING
           *
       `,
@@ -56,10 +57,15 @@ async function create(userInputValue) {
         userInputValue.username,
         userInputValue.email,
         userInputValue.password,
+        userInputValue.features,
       ],
     });
 
     return results.rows[0];
+  }
+
+  function injectDefaultFeaturesInObject(userInputValue) {
+    userInputValue.features = ["read:activation_token"];
   }
 }
 
@@ -235,6 +241,46 @@ async function validateUniqueEmail(email) {
   }
 }
 
+async function addFeatures(userId, features) {
+  const updatedUser = await runUpdateQuery(userId, features);
+  return updatedUser;
+
+  async function runUpdateQuery(userId, features) {
+    const results = await database.query({
+      text: `
+        UPDATE users
+        SET features = array_cat(features, $2),
+        updated_at = timezone('utc', now())
+        WHERE id = $1
+        RETURNING *
+      `,
+      values: [userId, features],
+    });
+
+    return results.rows[0];
+  }
+}
+
+async function setFeatures(userId, features) {
+  const updatedUser = await runUpdateQuery(userId, features);
+  return updatedUser;
+
+  async function runUpdateQuery(userId, features) {
+    const results = await database.query({
+      text: `
+        UPDATE users
+        SET features = $2, 
+        updated_at = timezone('utc', now())
+        WHERE id = $1
+        RETURNING *
+      `,
+      values: [userId, features],
+    });
+
+    return results.rows[0];
+  }
+}
+
 async function hashPasswordInObject(userInputValue) {
   const hashedPassword = await password.hash(userInputValue.password);
   userInputValue.password = hashedPassword;
@@ -245,6 +291,8 @@ const user = {
   findOneById,
   findOneByUsername,
   findOneByEmail,
+  addFeatures,
+  setFeatures,
   update,
 };
 
