@@ -2,6 +2,7 @@ import orchestrator from "tests/orchestrator";
 import { version as uuidVersion } from "uuid";
 import user from "models/user.js";
 import password from "models/password.js";
+import webserver from "infra/scripts/webserver";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -10,9 +11,9 @@ beforeAll(async () => {
 });
 
 describe("POST /api/v1/users", () => {
-  describe("Anonymous user", () => {
-    test("With unique and valid data", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+  describe("Anonymous `user`", () => {
+    test("With `unique` and `valid` data", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,8 +56,8 @@ describe("POST /api/v1/users", () => {
       expect(incorrectPasswordMath).toBe(false);
     });
 
-    test("With duplicated 'email'", async () => {
-      const response1 = await fetch("http://localhost:3000/api/v1/users", {
+    test("With `duplicated` `email`", async () => {
+      const response1 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +71,7 @@ describe("POST /api/v1/users", () => {
 
       expect(response1.status).toBe(201);
 
-      const response2 = await fetch("http://localhost:3000/api/v1/users", {
+      const response2 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,8 +95,8 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With duplicated 'username'", async () => {
-      const response1 = await fetch("http://localhost:3000/api/v1/users", {
+    test("With `duplicated` `username`", async () => {
+      const response1 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +110,7 @@ describe("POST /api/v1/users", () => {
 
       expect(response1.status).toBe(201);
 
-      const response2 = await fetch("http://localhost:3000/api/v1/users", {
+      const response2 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,8 +134,8 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With missing 'username' field", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+    test("With missing `username` field", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -157,8 +158,8 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With empty 'username' field", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+    test("With empty `username` field", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -182,8 +183,8 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With 'username' containing only spaces", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+    test("With `username` containing only `spaces`", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -207,8 +208,8 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With 'username' null", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+    test("With `username` `null`", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -232,8 +233,8 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With missing 'email' field", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+    test("With missing `email` field", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -256,8 +257,8 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With empty 'email' field", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+    test("With empty `email` field", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -281,8 +282,8 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With 'email' containing only spaces", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+    test("With `email` containing only `spaces`", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -306,8 +307,8 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With 'email' null", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+    test("With `email` `null`", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -331,8 +332,8 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With 'email' in an invalid format", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/users", {
+    test("With `email` in an `invalid` format", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -357,13 +358,13 @@ describe("POST /api/v1/users", () => {
     });
   });
 
-  describe("Default user", () => {
-    test("With unique and valid data", async () => {
+  describe("Default `user`", () => {
+    test("With `unique` and `valid` data", async () => {
       const user1 = await orchestrator.createUser({});
-      await orchestrator.activateUser(user1.id);
-      const user1SessionObject = await orchestrator.createSession(user1.id);
+      await orchestrator.activateUser(user1);
+      const user1SessionObject = await orchestrator.createSession(user1);
 
-      const user2Response = await fetch("http://localhost:3000/api/v1/users", {
+      const user2Response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

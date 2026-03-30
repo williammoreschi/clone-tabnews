@@ -10,13 +10,13 @@ beforeAll(async () => {
   await orchestrator.deleteAllEmail();
 });
 
-describe("Use case: Registration Flow (all successful)", () => {
+describe("Use case: `Registration Flow` (all successful)", () => {
   let createUserResponseBody;
   let activationTokenId;
   let createSessionResponseBody;
 
-  test("Create user account", async () => {
-    const response = await fetch("http://localhost:3000/api/v1/users", {
+  test("Create `user` `account`", async () => {
+    const response = await fetch(`${webserver.origin}/api/v1/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -41,7 +41,7 @@ describe("Use case: Registration Flow (all successful)", () => {
     });
   });
 
-  test("Receive activation email", async () => {
+  test("Receive `activation email`", async () => {
     const lastEmail = await orchestrator.getLastEmail();
 
     expect(lastEmail.sender).toBe("<contato@tabnews.moreschi.dev.br>");
@@ -60,7 +60,7 @@ describe("Use case: Registration Flow (all successful)", () => {
     expect(activeTokenObject.used_at).toBe(null);
   });
 
-  test("Activate account", async () => {
+  test("Activate `account`", async () => {
     const activationResponse = await fetch(
       `${webserver.origin}/api/v1/activations/${activationTokenId}`,
       {
@@ -81,9 +81,9 @@ describe("Use case: Registration Flow (all successful)", () => {
     ]);
   });
 
-  test("Login", async () => {
+  test("Create `session`", async () => {
     const createSessionResponse = await fetch(
-      "http://localhost:3000/api/v1/sessions",
+      `${webserver.origin}/api/v1/sessions`,
       {
         method: "POST",
         headers: {
@@ -103,8 +103,8 @@ describe("Use case: Registration Flow (all successful)", () => {
     expect(createSessionResponseBody.user_id).toBe(createUserResponseBody.id);
   });
 
-  test("Get user information", async () => {
-    const response = await fetch("http://localhost:3000/api/v1/user", {
+  test("Get `user` information", async () => {
+    const response = await fetch(`${webserver.origin}/api/v1/user`, {
       headers: {
         Cookie: `session_id=${createSessionResponseBody.token}`,
       },

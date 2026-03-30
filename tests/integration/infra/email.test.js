@@ -6,8 +6,8 @@ beforeAll(async () => {
   await orchestrator.deleteAllEmail();
 });
 
-describe("infra/email", () => {
-  test("send", async () => {
+describe("`infra/email`", () => {
+  test("`send`", async () => {
     await email.send({
       from: "Clone TabNews <contato@tabnews.moreschi.dev.br>",
       to: "test@tabnews.com.br",
