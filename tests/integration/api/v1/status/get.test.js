@@ -5,8 +5,8 @@ beforeAll(async () => {
 });
 
 describe("GET /api/v1/status", () => {
-  describe("Anonymous user", () => {
-    test("Retrieving current system status", async () => {
+  describe("Anonymous `user`", () => {
+    test("`Retrieving` current `system status`", async () => {
       const response = await fetch("http://localhost:3000/api/v1/status");
       expect(response.status).toBe(200);
 
@@ -21,8 +21,8 @@ describe("GET /api/v1/status", () => {
     });
   });
 
-  describe("Privileged user", () => {
-    test("Whit `read:status:all`", async () => {
+  describe("Privileged `user`", () => {
+    test("With `read:status:all`", async () => {
       const createUser = await orchestrator.createUser();
       const activatedUser = await orchestrator.activateUser(createUser.id);
       await orchestrator.addFeatureToUser(activatedUser, ["read:status:all"]);

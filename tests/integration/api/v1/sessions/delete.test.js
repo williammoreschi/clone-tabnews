@@ -10,8 +10,8 @@ beforeAll(async () => {
 });
 
 describe("DELETE /api/v1/sessions", () => {
-  describe("Default user", () => {
-    test("With nonexisting session", async () => {
+  describe("Default `user`", () => {
+    test("With `nonexisting session`", async () => {
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
         method: "DELETE",
         headers: {
@@ -43,7 +43,7 @@ describe("DELETE /api/v1/sessions", () => {
       });
     });
 
-    test("With expired session", async () => {
+    test("With `expired session`", async () => {
       jest.useFakeTimers({
         now: new Date(Date.now() - session.EXPIRATION_IN_MILLISECONDS),
       });
@@ -85,7 +85,7 @@ describe("DELETE /api/v1/sessions", () => {
       });
     });
 
-    test("With valid session", async () => {
+    test("With `valid session`", async () => {
       const createdUser = await orchestrator.createUser({});
 
       const sessionObject = await orchestrator.createSession(createdUser.id);

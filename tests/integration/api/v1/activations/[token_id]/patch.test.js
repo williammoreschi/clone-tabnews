@@ -10,8 +10,8 @@ beforeAll(async () => {
 });
 
 describe("PATCH /api/v1/activations/[token_id]", () => {
-  describe("Anonymous user", () => {
-    test("With nonexistent token", async () => {
+  describe("Anonymous `user`", () => {
+    test("With `nonexistent token`", async () => {
       const response = await fetch(
         "http://localhost:3000/api/v1/activations/256bc49a-132a-42e4-8334-998fd17ee71e",
         {
@@ -31,7 +31,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       });
     });
 
-    test("With expired token", async () => {
+    test("With `expired token`", async () => {
       jest.useFakeTimers({
         now: new Date(Date.now() - activation.EXPIRATION_IN_MILLISECONDS),
       });
@@ -60,7 +60,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       });
     });
 
-    test("With already used token", async () => {
+    test("With `already used token`", async () => {
       const createdUser = await orchestrator.createUser({});
       const activationToken = await activation.create(createdUser.id);
 
@@ -92,7 +92,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       });
     });
 
-    test("With valid token", async () => {
+    test("With `valid token`", async () => {
       const createdUser = await orchestrator.createUser({});
       const activationToken = await activation.create(createdUser.id);
 

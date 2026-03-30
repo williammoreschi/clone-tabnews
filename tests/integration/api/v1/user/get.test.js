@@ -10,8 +10,8 @@ beforeAll(async () => {
 });
 
 describe("GET /api/v1/user", () => {
-  describe("Anonymous user", () => {
-    test("Retrieving the endpoint", async () => {
+  describe("Anonymous `user`", () => {
+    test("`Retrieving` the `endpoint`", async () => {
       const response = await fetch("http://localhost:3000/api/v1/user");
 
       expect(response.status).toBe(403);
@@ -27,8 +27,8 @@ describe("GET /api/v1/user", () => {
     });
   });
 
-  describe("Default user", () => {
-    test("With valid session", async () => {
+  describe("Default `user`", () => {
+    test("With `valid` `session`", async () => {
       const createdUser = await orchestrator.createUser({
         username: "userWithValidSession",
       });
